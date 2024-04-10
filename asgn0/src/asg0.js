@@ -95,7 +95,7 @@ function handleDrawOperationEvent() {
       v4 = v2.normalize(); 
       drawVector(v3, 'green'); 
       drawVector(v4, 'green'); 
-   } else if (document.getElementById('operation').value == 'angle between') {
+   } else if (document.getElementById('operation').value == 'anglebetween') {
       console.log('Angle: ' + (angleBetween(v1, v2)));
    } else if (document.getElementById('operation').value == 'area') {
       console.log("Area of the triangle: " + (areaTriangle(v1, v2)));
@@ -109,8 +109,8 @@ function handleDrawOperationEvent() {
 // the dot product divided by the product of the magnitudes = cosine of the angle
 // then convert to degrees
 function angleBetween(v1, v2) {
-   var alpha = Math.acos(Vector3.dot(v1, v2) / (v1.magnitude() * v2.magnitude())); 
-   alpha *= 180/Math.PI; 
+   var alpha = Math.acos(Vector3.dot(v1, v2) / (v1.magnitude() * v2.magnitude()));
+   alpha *= 180/Math.PI;
    return alpha;
 }
 
