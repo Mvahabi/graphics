@@ -1,25 +1,24 @@
-// DrawRectangle.js
+
+// global variables, reference the piazza post for the advice
 var canvas;
 var ctx;
 
 function main() {
-    // Retrieve <canvas> element <- (1)
     canvas = document.getElementById('cnv1');
     if (!canvas) {
         console.log('Failed to retrieve the <canvas> element');
         return;
     }
     
-    // Get the rendering context for 2DCG <- (2)
     ctx = canvas.getContext('2d');
 
-    // Draw a black rectangle <- (3)
-    ctx.fillStyle = 'black'; // Set a black color
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill a rectangle with the color
+    // Draw a black rectangle
+    // Fill a rectangle with the color
+    ctx.fillStyle = 'black'; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height); 
  }
 
- // Draws the vectors v1 and v2
- // Used 2021 Fall Lab Section video as reference
+ // Draws the two vectors; 2021 Fall Lab Section video
  function drawVector(v, color) {
     ctx.strokeStyle = color; // Set color
     let cx = canvas.width/2; // Get center of y axis
@@ -31,89 +30,94 @@ function main() {
  }
 
  // Draws v1 and v2 when button pressed
+ // read in the x and y values for both vectors 
+ // then create two vectors as a result
  function handleDrawEvent() {
-    ctx.fillStyle = 'black'; // Set a black color
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill a rectangle with the color
+    ctx.fillStyle = 'black'; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    var v1x = document.getElementById('v1x').value; // Read in v1 x value
-    var v1y = document.getElementById('v1y').value; // Read in v1 y value
-    var v1 = new Vector3([v1x, v1y, 0.0]); // Create vector
-    drawVector(v1, 'red'); // Draw vector
+    var v1x = document.getElementById('v1x').value; 
+    var v1y = document.getElementById('v1y').value; 
+    var v1 = new Vector3([v1x, v1y, 0]); 
+    drawVector(v1, 'red'); 
 
-    var v2x = document.getElementById('v2x').value; // Read in v2 x value
-    var v2y = document.getElementById('v2y').value; // Read in v2 y value
-    var v2 = new Vector3([v2x, v2y, 0.0]); // Create vector
-    drawVector(v2, 'blue'); // Draw vector
+    var v2x = document.getElementById('v2x').value; 
+    var v2y = document.getElementById('v2y').value; 
+    var v2 = new Vector3([v2x, v2y, 0]); 
+    drawVector(v2, 'blue'); 
  }
 
- // Carries out operation of function called when button pressed
+ // Operation upon button pressed
+ // same as handle draw event but adding options for operations and scalar
 function handleDrawOperationEvent() {
-   ctx.fillStyle = 'black'; // Set a black color
-   ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill a rectangle with the color
+   ctx.fillStyle = 'black'; 
+   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
    var scalar = document.getElementById('scalar').value;
 
-   var v1x = document.getElementById('v1x').value; // Read in v1 x value
-   var v1y = document.getElementById('v1y').value; // Read in v1 y value
-   var v1 = new Vector3([v1x, v1y, 0]); // Create vector
-   drawVector(v1, 'red'); // Draw vector
+   var v1x = document.getElementById('v1x').value; 
+   var v1y = document.getElementById('v1y').value; 
+   var v1 = new Vector3([v1x, v1y, 0]); 
+   drawVector(v1, 'red'); 
 
-   var v2x = document.getElementById('v2x').value; // Read in v2 x value
-   var v2y = document.getElementById('v2y').value; // Read in v2 y value
-   var v2 = new Vector3([v2x, v2y, 0]); // Create vector
-   drawVector(v2, 'blue'); // Draw vector
+   var v2x = document.getElementById('v2x').value; 
+   var v2y = document.getElementById('v2y').value; 
+   var v2 = new Vector3([v2x, v2y, 0]); 
+   drawVector(v2, 'blue'); 
 
+   var v3, v4;
+
+   // for all of these, you call the appropiate function 
+   // and have the canvas draw the resulting vetor
    if (document.getElementById('operation').value == 'add') {
-      var v3 = v1.add(v2); // Call function
-      drawVector(v3, 'green'); // Draw vector
-   }
-   if (document.getElementById('operation').value == 'subtract') {
-      var v3 = v1.sub(v2); // Call function
-      drawVector(v3, 'green'); // Draw vector
-   }
-   if (document.getElementById('operation').value == 'multiply') {
-      var v3 = v1.mul(scalar); // Call function
-      var v4 = v2.mul(scalar); // Call function
-      drawVector(v3, 'green'); // Draw vector
-      drawVector(v4, 'green'); // Draw vector
-   }
-   if (document.getElementById('operation').value == 'divide') {
-      var v3 = v1.div(scalar); // Call function
-      var v4 = v2.div(scalar); // Call function
-      drawVector(v3, 'green'); // Draw vector
-      drawVector(v4, 'green'); // Draw vector
-   }
-   if (document.getElementById('operation').value == 'anglebetween') {
-      console.log('Angle: ' + (angleBetween(v1, v2))); // Call function and print output
-   }
-   if (document.getElementById('operation').value == 'area') {
-      console.log("Area of the triangle: " + (areaTriangle(v1, v2))); // Call function and print output
-   }
-   if (document.getElementById('operation').value == 'magnitude') {
-      var v3 = v1.magnitude(); // Call function
-      var v4 = v2.magnitude(); // Call function
+      v3 = v1.add(v2); 
+      drawVector(v3, 'green'); 
+   } else if (document.getElementById('operation').value == 'subtract') {
+      v3 = v1.sub(v2); 
+      drawVector(v3, 'green'); 
+   } else if (document.getElementById('operation').value == 'multiply') {
+      v3 = v1.mul(scalar); 
+      v4 = v2.mul(scalar); 
+      drawVector(v3, 'green'); 
+      drawVector(v4, 'green'); 
+   } else if (document.getElementById('operation').value == 'divide') {
+      v3 = v1.div(scalar); 
+      v4 = v2.div(scalar); 
+      drawVector(v3, 'green'); 
+      drawVector(v4, 'green'); 
+   } else if (document.getElementById('operation').value == 'magnitude') {
+      v3 = v1.magnitude(); 
+      v4 = v2.magnitude(); 
       console.log('Magnitude v1: ', v3);
       console.log('Magnitude v2: ', v4);
-   }
-   if (document.getElementById('operation').value == 'normalize') {
-      var v3 = v1.normalize(); // Call function
-      var v4 = v2.normalize(); // Call function
-      drawVector(v3, 'green'); // Draw vector
-      drawVector(v4, 'green'); // Draw vector
+   } else if (document.getElementById('operation').value == 'normalize') {
+      v3 = v1.normalize(); 
+      v4 = v2.normalize(); 
+      drawVector(v3, 'green'); 
+      drawVector(v4, 'green'); 
+   } else if (document.getElementById('operation').value == 'angle between') {
+      console.log('Angle: ' + (angleBetween(v1, v2)));
+   } else if (document.getElementById('operation').value == 'area') {
+      console.log("Area of the triangle: " + (areaTriangle(v1, v2)));
    }
 }
 
-// Calculates the angle between v1 and v2
+// angle between v1 and v2
+// Alpha:
+// calculates the dot product of vectors
+// calculate the magnitudes (lengths) of vectors 
+// the dot product divided by the product of the magnitudes = cosine of the angle
+// then convert to degrees
 function angleBetween(v1, v2) {
-   // Dot product solving for alpha = cos^(-1) [(a Â· b) / (|a| |b|)]
-   var alpha = Math.acos(Vector3.dot(v1, v2) / (v1.magnitude() * v2.magnitude())); // Formula
-   alpha *= 180/Math.PI; // Convert to degrees
+   var alpha = Math.acos(Vector3.dot(v1, v2) / (v1.magnitude() * v2.magnitude())); 
+   alpha *= 180/Math.PI; 
    return alpha;
 }
 
-// Calculates the area of the triangle created from v1 and v2
+// area of the triangle created from v1 and v2
+// connect the two lines together then divide by magnitude
 function areaTriangle(v1, v2) {
-   let cross = Vector3.cross(v1, v2); // Get cross product of v1 and v2
-   let area = new Vector3([cross[0], cross[1], cross[2]]).magnitude()/2; // Divide by mag to get area
+   let cross = Vector3.cross(v1, v2);
+   let area = new Vector3([cross[0], cross[1], cross[2]]).magnitude()/2; 
    return area;
 }
