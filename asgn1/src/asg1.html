@@ -20,14 +20,14 @@
         <script src="../src/dim.js"></script>
         <script src="../src/cir.js"></script>
 
-        <img id="image" src="../img/reference.png" style="display:none;" height="400" width="400"/> 
-
         <br><br>
         <button type="button" id="clearButton">Clear Canvas</button>
 
         <br><br>
+        <img id="image" src="../img/bio.jpg" style="display:none;" height="400" width="400"/> 
+        <button type="button" onclick="show()" id="image">Picture Reference</button>
         <button type="button" id="picture">Paint Picture</button>
-        <button type="button" onclick="show()" id="pictureref">Picture Reference</button>
+
 
         <br><br>
         Drawing Mode:
@@ -45,7 +45,7 @@
         Blue <input type="range" min="0" max="100" value="0" class="slider" id="blueSlide">
 
         <br><br>
-        Shape Size: <input type="range" min="5" max="40" value="0" class="slider" id="sizeSlide">
+        Shape Size: <input type="range" min="6" max="40" value="0" class="slider" id="sizeSlide">
         Circles (Segment Count): <input type="range" min="5" max="40" value="0" class="slider" id="segments">
     </body>
 </html> 
