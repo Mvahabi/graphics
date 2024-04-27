@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Mahyar Vahabi Asgn</title>
+    </head>
+    <body onload="main()">
+        <canvas id="webgl" width="600" height="600"> </canvas>
+
+        <script src="../lib/cuon-matrix-cse160.js"></script> 
+        <script src="../lib/webgl-utils.js"></script>
+        <script src="../lib/webgl-debug.js"></script>
+        <script src="../lib/cuon-utils.js"></script>
+
+        <script src="../src/asg2.js"></script>
+        <script src="../src/Triangle.js"></script>
+        <script src="../src/Cube.js"></script>
+
+        <p id="numdot"> XXX </p>
+
+        Animation:
+        <button type="button" id="on">On</button>
+        <button type="button" id="off">Off</button>
+
+        <br><br>
+        Rotate <input type="range" min="-180" max="180" value="0" class="slider" id="angleSlide">
+
+        <br><br>
+        Move Captain Popeye!!!
+        <br><br>
+
+        Legs:
+        <br>
+
+        Left Leg <input type="range" min="-15" max="15" value="0" class="slider" id="frontLeft">
+        Right Leg <input type="range" min="-15" max="15" value="0" class="slider" id="frontRight">
+        <br><br>
+
+        Arms:
+        <br>
+
+        Left: 
+        Full Arm <input type="range" min="-7" max="0" value="0" class="slider" id="lshol">
+        Wrist <input type="range" min="-3" max="3" value="0" class="slider" id="lelb">
+        Hand <input type="range" min="-3" max="3" value="0" class="slider" id="lwri">
+        <br>
+
+        Right: 
+        Full Arm <input type="range" min="0" max="7" value="0" class="slider" id="rshol">
+        Wrist <input type="range" min="-3" max="3" value="0" class="slider" id="relb">
+        Hand <input type="range" min="-3" max="3" value="0" class="slider" id="rwri">
+
+    </body>
+</html> 
