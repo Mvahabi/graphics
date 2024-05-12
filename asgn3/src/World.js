@@ -357,7 +357,6 @@ function sendImageToTEXTURE5(image5) {
   gl.uniform1i(u_Sampler5, 5);
 }
 
-
 // Global Variables for UI
 let g_AngleX = 0;
 let g_camSlider = -180;
@@ -433,22 +432,21 @@ function updateAnimationAngles() {
 
 // Controls the camera movements with keys
 function keydown(ev) {
-  if (ev.keyCode == 68) { // d
-    g_camera.eye.elements[0] += 0.15;
-    //g_camera.mvright();
+  if (ev.keyCode == 68) { //d
+    g_camera.eye.elements[0] += 0.2;
   } else if (ev.keyCode == 65) { // a
-    g_camera.eye.elements[0] -= 0.15;
-    //g_camera.mvleft();
-  } else if (ev.keyCode == 87) { // w
-    g_camera.mvforward();
-  } else if (ev.keyCode == 83) { // s
-    g_camera.mvbackward();
-  } else if (ev.keyCode == 81) { // q
-    g_camera.panleft();
-  } else if (ev.keyCode == 69) { // e
-    g_camera.panright();
+    g_camera.eye.elements[0] -= 0.2;
+  } else if (ev.keyCode == 87) { //w
+    g_camera.forward();
+  } else if (ev.keyCode == 83) { 
+    g_camera.back();
+  } else if (ev.keyCode == 81) {
+    g_camera.panLeft();
+  } else if (ev.keyCode == 69) {
+    g_camera.panRight();
   }
   renderScene();
+  console.log(ev.keyCode);
 }
 
 var g_map = [
@@ -595,15 +593,6 @@ function renderScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  // Set color variables
-  var yellow = [1.0, 1.0, 0.0, 1.0];
-  var blue = [0.0, 0.6, 1.0, 1.0];
-  var brown = [0.7, 0.4, 0.3, 1.0];
-  var red = [1.0, 0.0, 0.0, 1.0];
-  var black = [0.0, 0.0, 0.0, 1.0];
-  var white = [1.0, 1.0, 1.0, 1.0];
-  var gray = [0.8, 1.0, 1.0, 1.0];
-
   // Sky
   var sky = new Cube();
   sky.color = [1.0, 0.0, 0.0, 1.0];
@@ -622,243 +611,226 @@ function renderScene() {
 
   drawMap();
 
-  // Body 
+  // Set color variables
+  var yellow = [1.0, 1.0, 0.0, 1.0];
+  var blue = [0.0, 0.6, 1.0, 1.0];
+  var brown = [0.7, 0.4, 0.3, 1.0];
+  var darkBrown = [0.4, 0.2, 0.0, 1.0]; // Dark brown color
+  var red = [1.0, 0.0, 0.0, 1.0];
+  var black = [0.0, 0.0, 0.0, 1.0];
+  var white = [1.0, 1.0, 1.0, 1.0];
+  var gray = [0.8, 1.0, 1.0, 1.0]
+  // Skin colors
+  var lightSkin = [0.94, 0.74, 0.65, 1.0]; // Light skin tone
+  var mediumSkin = [0.76, 0.57, 0.49, 1.0]; // Medium skin tone
+  var darkSkin = [0.47, 0.32, 0.28, 1.0]; // Dark skin tone
+  var mouthColor = [0.8, 0.4, 0.4, 1.0];
+
+  // face 
   var body = new Cube();
-  body.color = yellow;
-  body.textureNum = -2;
+  body.color = lightSkin;
   body.matrix.scale(0.6, 0.6, 0.3);
-  body.matrix.translate(-0.5, 0.43, -0.3);
+  body.matrix.translate(-0.5, 1.1, -0.3);
   body.render();
 
-  // Left Eye 3
-  var lefteye3 = new Cube();
-  lefteye3.color = black;
-  lefteye3.textureNum = -2;
-  lefteye3.matrix.scale(0.05, 0.07, 0.01);
-  lefteye3.matrix.translate(-2.3, 8.6, -11.5);
-  lefteye3.render();
-
-  // Left Eye 2
-  var lefteye2 = new Cube();
-  lefteye2.color = blue;
-  lefteye2.textureNum = -2;
-  lefteye2.matrix.scale(0.1, 0.13, 0.01);
-  lefteye2.matrix.translate(-1.5, 4.4, -11);
-  lefteye2.render();
-  
   // Left Eye
-  var lefteye1 = new Cube();
-  lefteye1.color = white;
-  lefteye1.textureNum = -2;
-  lefteye1.matrix.scale(0.18, 0.21, 0.01);
-  lefteye1.matrix.translate(-1.2, 2.6, -10.5);
-  lefteye1.render();
+  var lefteye = new Cube();
+  lefteye.color = black;
+  lefteye.matrix.scale(0.1, 0.02, 0.01);
+  lefteye.matrix.translate(-1.5, 52, -11);
+  lefteye.render();
 
-  // Right Eye 3
-  var righteye3 = new Cube();
-  righteye3.color = black;
-  righteye3.textureNum = -2;
-  righteye3.matrix.scale(0.05, 0.07, 0.01);
-  righteye3.matrix.translate(1.2, 8.6, -11.5);
-  righteye3.render();
+  // Right Eye 1
+  var righteye1 = new Cube();
+  righteye1.color = white;
+  righteye1.matrix.scale(0.05, 0.07, 0.01);
+  righteye1.matrix.translate(1.3, 14.5, -11.5);
+  righteye1.render();
 
   // Right Eye 2
   var righteye2 = new Cube();
-  righteye2.color = blue;
-  righteye2.textureNum = -2;
+  righteye2.color = black;
   righteye2.matrix.scale(0.1, 0.13, 0.01);
-  righteye2.matrix.translate(0.45, 4.4, -11);
+  righteye2.matrix.translate(0.45, 7.6, -11);
   righteye2.render();
 
-  // Right Eye
-  var righteye1 = new Cube();
-  righteye1.color = white;
-  righteye1.textureNum = -2;
-  righteye1.matrix.scale(0.18, 0.21, 0.01);
-  righteye1.matrix.translate(0.15, 2.6, -10.5);
-  righteye1.render();
+  // Left Eyebrows 
+  var leftbrows = new Cube();
+  leftbrows.color = black;
+  leftbrows.matrix.scale(0.14, 0.02, 0.01);
+  leftbrows.matrix.translate(-1.2, 57, -11);
+  leftbrows.render();
+
+  // right Eyebrows 
+  var rightbrows = new Cube();
+  rightbrows.color = black;
+  rightbrows.matrix.scale(0.14, 0.02, 0.01);
+  rightbrows.matrix.translate(0.19, 57, -11);
+  rightbrows.render();
 
   // Nose
   var nose = new Cube();
-  nose.color = [1.0, 0.9, 0.0, 1.0];
-  nose.textureNum = -2;
-  nose.matrix.scale(0.07, 0.07, 0.2);
-  nose.matrix.translate(-0.5, 6.5, -1.4);
+  nose.color = mediumSkin;
+  nose.matrix.scale(0.15, 0.1, 0.1);
+  nose.matrix.translate(-0.5, 8.4, -1.4);
   nose.render();
 
   // Mouth
   var mouth = new Cube();
   mouth.color = black;
-  mouth.textureNum = -2;
   mouth.matrix.scale(0.25, 0.01, 0.01);
-  mouth.matrix.translate(-0.5, 38, -11.5);
+  mouth.matrix.translate(-0.5, 80, -10);
   mouth.render();
 
-  // Left Tooth
-  var lefttooth = new Cube();
-  lefttooth.color = white;
-  lefttooth.textureNum = -2;
-  lefttooth.matrix.scale(0.05, 0.07, 0.01);
-  lefttooth.matrix.translate(-1.2, 4.35, -11.5);
-  lefttooth.render();
+  // Left chin
+  var leftchin = new Cube();
+  leftchin.color = mediumSkin;
+  leftchin.matrix.scale(0.1, 0.07, 0.1);
+  leftchin.matrix.translate(-1, 9.9, -1.8);
+  leftchin.render();
 
-  // Right Tooth
-  var righttooth = new Cube();
-  righttooth.color = white;
-  righttooth.textureNum = -2;
-  righttooth.matrix.scale(0.05, 0.07, 0.01);
-  righttooth.matrix.translate(0.1, 4.35, -11.5);
-  righttooth.render();
+  // Right chin
+  var rightchin = new Cube();
+  rightchin.color = mediumSkin;
+  rightchin.matrix.scale(0.1, 0.07, 0.1);
+  rightchin.matrix.translate(0.1, 9.9, -1.8);
+  rightchin.render();
 
-  // Pants
-  var pants = new Cube();
-  pants.color = white;
-  pants.textureNum = -2;
-  pants.matrix.scale(0.6, 0.07, 0.3);
-  pants.matrix.translate(-0.5, 2.7, -0.3);
-  pants.render();
+  // Top clothes
+  var top = new Cube();
+  top.color = red;
+  top.matrix.scale(0.6, 0.07, 0.3);
+  top.matrix.translate(-0.5, 8.4, -0.3);
+  top.render();
 
-  // Pants2
-  var pants2 = new Cube();
-  pants2.color = brown;
-  pants2.textureNum = -2;
-  pants2.matrix.scale(0.6, 0.14, 0.3);
-  pants2.matrix.translate(-0.5, 0.4, -0.3);
-  pants2.render();
+  // shirt
+  var shirt = new Cube();
+  shirt.color = black;
+  shirt.matrix.scale(0.6, 0.14, 0.3);
+  shirt.matrix.translate(-0.5, 3.2, -0.3);
+  shirt.render();
 
-  // Tie
-  var tie = new Cube();
-  tie.color = white;
-  tie.textureNum = -2;
-  tie.matrix.setRotate(45,0,0,1);
-  tie.matrix.scale(0.07, 0.07, 0.01);
-  tie.matrix.translate(1.6, 1.6,  -10.5);
-  tie.render();
+  // Buttons
+  var button1 = new Cube();
+  button1.color = yellow;
+  button1.matrix.scale(0.02, 0.02, 0.1);
+  button1.matrix.translate(-0.5, 27, -1);
+  button1.render();
 
-  // Tie 2
-  var tie2 = new Cube();
-  tie2.color = red;
-  tie2.textureNum = -2;
-  tie2.matrix.scale(0.05, 0.11, 0.01);
-  tie2.matrix.translate(-0.5, 0.55, -11);
-  tie2.render();
+  var button2 = new Cube();
+  button2.color = yellow;
+  button2.matrix.scale(0.02, 0.02, 0.1);
+  button2.matrix.translate(-0.5, 25, -1);
+  button2.render();
+
+  var button3 = new Cube();
+  button3.color = yellow;
+  button3.matrix.scale(0.02, 0.02, 0.1);
+  button3.matrix.translate(-0.5, 23, -1);
+  button3.render();
 
   // Left Leg
   var leftleg = new Cube();
-  leftleg.color = yellow;
-  leftleg.textureNum = -2;
+  leftleg.color = blue;
   leftleg.matrix.rotate(g_leftLeg, 1, 0, 0);
-  leftleg.matrix.scale(0.08, 0.2, 0.08);
-  leftleg.matrix.translate(-2, -0.8, 0.1);
+  leftleg.matrix.scale(0.16, 0.55, 0.1);
+  leftleg.matrix.translate(-1.4, -0.2, 0.1);
   leftleg.render();
-
-  // Left Shoe
-  var leftshoe = new Cube();
-  leftshoe.color = black;
-  leftshoe.textureNum = -2;
-  leftshoe.matrix.rotate(g_leftLeg, 1, 0, 0);
-  leftshoe.matrix.scale(0.08, 0.05, 0.15);
-  leftshoe.matrix.translate(-2, -4, -0.3);
-  leftshoe.render();
 
   // Right Leg
   var rightleg = new Cube();
-  rightleg.color = yellow;
-  rightleg.textureNum = -2;
+  rightleg.color = blue;
   rightleg.matrix.rotate(-g_rightLeg, 1, 0, 0);
-  rightleg.matrix.scale(0.08, 0.2, 0.08);
-  rightleg.matrix.translate(1, -0.8, 0.1);
+  rightleg.matrix.scale(0.16, 0.55, 0.1);
+  rightleg.matrix.translate(0.4, -0.2, 0.1);
   rightleg.render();
+  
+  // Left Shoe
+  var leftshoe = new Cube();
+  leftshoe.color = darkBrown;
+  leftshoe.matrix.rotate(g_leftLeg, 1, 0, 0);
+  leftshoe.matrix.scale(0.11, 0.05, 0.15);
+  leftshoe.matrix.translate(-1.8, -3.3, -0.3);
+  leftshoe.render();
 
   // Right Shoe
   var rightshoe = new Cube();
-  rightshoe.color = black;
-  rightshoe.textureNum = -2;
+  rightshoe.color = darkBrown;
   rightshoe.matrix.rotate(-g_rightLeg, 1, 0, 0);
-  rightshoe.matrix.scale(0.08, 0.05, 0.15);
-  rightshoe.matrix.translate(1, -4, -0.3);
+  rightshoe.matrix.scale(0.11, 0.05, 0.15);
+  rightshoe.matrix.translate(0.8, -3.3, -0.3);
   rightshoe.render();
 
   // Left Arm Shoulder
   var leftarms = new Cube();
-  leftarms.color = yellow;
-  leftarms.textureNum = -2;
+  leftarms.color = lightSkin;
   leftarms.matrix.rotate(g_lshol, 0, 0, 1);
   var elbow = new Matrix4(leftarms.matrix);
-  leftarms.matrix.scale(0.06, 0.16, 0.06);
-  leftarms.matrix.translate(-5.7, 0.7, 0.5);
+  leftarms.matrix.scale(0.09, 0.37, 0.09);
+  leftarms.matrix.translate(-4.3, 1, 0.5);
   leftarms.render();
 
   // Left Arm Elbow
   var leftarme = new Cube();
-  leftarme.color = yellow;
-  leftarme.textureNum = -2;
+  leftarme.color = lightSkin;
   leftarme.matrix = elbow;
   leftarme.matrix.rotate(g_lelb, 0, 1, 1);
   var wrist = new Matrix4(leftarme.matrix);
-  leftarme.matrix.scale(0.06, 0.11, 0.06);
-  leftarme.matrix.translate(-5.7, 0.2, 0.5);
+  leftarme.matrix.scale(0.2, 0.2, 0.2);
+  leftarme.matrix.translate(-2.2, 1,0);
   leftarme.render();
 
   // Left Arm Wrist
   var leftarmw = new Cube();
-  leftarmw.color = yellow;
-  leftarmw.textureNum = -2;
+  leftarmw.color = lightSkin;
   leftarmw.matrix = wrist;
   leftarmw.matrix.rotate(g_lwri, 0, 1, 1);
-  leftarmw.matrix.scale(0.06, 0.06, 0.06);
-  leftarmw.matrix.translate(-5.7, -0.5, 0.5);
+  leftarmw.matrix.scale(0.09, 0.06, 0.09);
+  leftarmw.matrix.translate(-4.3, 2.7, 0.5);
   leftarmw.render();
 
   // Right Arm Shoulder
   var rightarms = new Cube();
-  rightarms.color = yellow;
-  rightarms.textureNum = -2;
+  rightarms.color = lightSkin;
   rightarms.matrix.rotate(g_rshol, 0, 0, 1);
   var elbow1 = new Matrix4(rightarms.matrix);
-  rightarms.matrix.scale(0.06, 0.16, 0.06);
-  rightarms.matrix.translate(4.7, 0.7, 0.5);
+  rightarms.matrix.scale(0.09, 0.37, 0.09);
+  rightarms.matrix.translate(3.3, 1, 0.5);
   rightarms.render();
 
   // Right Arm Elbow
   var rightarme = new Cube();
-  rightarme.color = yellow;
-  rightarme.textureNum = -2;
+  rightarme.color = lightSkin;
   rightarme.matrix = elbow1;
   rightarme.matrix.rotate(g_relb, 0, 1, 1);
   var wrist1 = new Matrix4(rightarme.matrix);
-  rightarme.matrix.scale(0.06, 0.11, 0.06);
-  rightarme.matrix.translate(4.7, 0.2, 0.5);
+  rightarme.matrix.scale(0.2, 0.2, 0.2);
+  rightarme.matrix.translate(1.2,1,0);
   rightarme.render();
 
   // Right Arm Wrist
   var rightarmw = new Cube();
-  rightarmw.color = yellow;
-  rightarmw.textureNum = -2;
+  rightarmw.color = lightSkin;
   rightarmw.matrix = wrist1;
   rightarmw.matrix.rotate(g_rwri, 0, 1, 1);
-  rightarmw.matrix.scale(0.06, 0.06, 0.06);
-  rightarmw.matrix.translate(4.7, -0.5, 0.5);
+  rightarmw.matrix.scale(0.09, 0.06, 0.09);
+  rightarmw.matrix.translate(3.3, 2.7, 0.5);
   rightarmw.render();
 
-  // Krusty Krab Cap 1
+  // Cap
   var cap = new Cube();
   cap.color = gray;
-  cap.textureNum = -2;
   cap.matrix.rotate(g_cap, 1, 0, 0);
-  cap.matrix.scale(0.13, 0.18, 0.13);
-  cap.matrix.translate(-0.5, 4.8, -0.5);
+  cap.matrix.scale(0.6, 0.18, 0.33);
+  cap.matrix.translate(-0.5, 7, -0.38);
   cap.render();
 
-  // Krusty Krab Cap 2
   var cap2 = new Cube();
-  cap2.color = gray;
-  cap2.textureNum = -2;
+  cap2.color = black;
   cap2.matrix.rotate(g_cap, 1, 0, 0);
-  cap2.matrix.scale(0.13, 0.02, 0.25);
-  cap2.matrix.translate(-0.5, 43, -0.75);
+  cap2.matrix.scale(0.6, 0.02, 0.48);
+  cap2.matrix.translate(-0.5, 62, -0.57);
   cap2.render();
-
 
   var duration = performance.now() - startTime;
   sendTextToHTML(" ms: " + Math.floor(duration) + " fps: " + Math.floor(10000 / duration) / 10, "numdot");
@@ -872,3 +844,4 @@ function sendTextToHTML(text, htmlID) {
   }
   htmlElm.innerHTML = text;
 }
+
