@@ -431,22 +431,41 @@ function updateAnimationAngles() {
 }
 
 // Controls the camera movements with keys
+// function keydown(ev) {
+//   if (ev.keyCode == 68) { //d
+//     g_camera.eye.elements[0] += 0.2;
+//   } else if (ev.keyCode == 65) { // a
+//     g_camera.eye.elements[0] -= 0.2;
+//   } else if (ev.keyCode == 87) { //w
+//     g_camera.forward();
+//   } else if (ev.keyCode == 83) { 
+//     g_camera.back();
+//   } else if (ev.keyCode == 81) {
+//     g_camera.panLeft();
+//   } else if (ev.keyCode == 69) {
+//     g_camera.panRight();
+//   }
+//   renderScene();
+//   console.log(ev.keyCode);
+// }
 function keydown(ev) {
-  if (ev.keyCode == 68) { //d
-    g_camera.eye.elements[0] += 0.2;
-  } else if (ev.keyCode == 65) { // a
-    g_camera.eye.elements[0] -= 0.2;
-  } else if (ev.keyCode == 87) { //w
-    g_camera.forward();
-  } else if (ev.keyCode == 83) { 
-    g_camera.back();
-  } else if (ev.keyCode == 81) {
-    g_camera.panLeft();
-  } else if (ev.keyCode == 69) {
-    g_camera.panRight();
+  if (ev.keyCode == 68) { // 'd' key
+      g_camera.eye.elements[0] += 0.2;
+      g_camera.at.elements[0] += 0.2;
+  } else if (ev.keyCode == 65) { // 'a' key
+      g_camera.eye.elements[0] -= 0.2;
+      g_camera.at.elements[0] -= 0.2;
+  } else if (ev.keyCode == 87) { // 'w' key
+      g_camera.forward();
+  } else if (ev.keyCode == 83) { // 's' key
+      g_camera.back();
+  } else if (ev.keyCode == 81) { // 'q' key
+      g_camera.panLeft();
+  } else if (ev.keyCode == 69) { // 'e' key
+      g_camera.panRight();
   }
   renderScene();
-  console.log(ev.keyCode);
+  console.log(`Key pressed: ${ev.keyCode}`);
 }
 
 var g_map = [

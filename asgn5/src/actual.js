@@ -60,36 +60,18 @@ function main() {
     scene.add(light.target);
   }
 
-  {const planeSize = 80;
-
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('../sand.jpg');
-    texture.encoding = THREE.sRGBEncoding;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.magFilter = THREE.NearestFilter;
-    const repeats = planeSize / 2;
-    texture.repeat.set(repeats, repeats);
-
-    const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
-    const planeMat = new THREE.MeshPhongMaterial({
-      map: texture,
-      side: THREE.DoubleSide,
-    });
-    const mesh = new THREE.Mesh(planeGeo, planeMat);
-    mesh.receiveShadow = true;
-    mesh.rotation.x = Math.PI * -.5;
-    scene.add(mesh);
-  }
 
   {const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
-      '../background/px.png',
-      '../background/nx.png',
-      '../background/py.png',
-      '../background/ny.png',
-      '../background/pz.png',
-      '../background/nz.png',
+      '../background/dawnmountain-xpos.png',
+      '../background/dawnmountain-xneg.png',
+      
+      '../background/dawnmountain-ypos.png',
+      '../background/dawnmountain-yneg.png',
+
+      '../background/dawnmountain-zpos.png',
+      '../background/dawnmountain-zneg.png',
+     
     ]);
     scene.background = texture;
   }
@@ -206,8 +188,7 @@ function main() {
       });
     });
   }
-  makeLabel(400, 100, 'Lucy', [-20, 2.5, 18]);
-
+  
   {const mtlLoader = new MTLLoader();
     mtlLoader.load('../GolfCart/materials.mtl', (mtl) => {
       mtl.preload();
@@ -225,8 +206,8 @@ function main() {
           }
         });
         root.rotation.y = 0;
-        root.scale.set(5,5,5);
-        root.position.set(-10, 4.5, 6);
+        root.scale.set(4,4,4);
+        root.position.set(-15, 3.5, 6);
         scene.add(root);
       });
     });
@@ -248,39 +229,61 @@ function main() {
             obj.castShadow = true;
           }
         });
-        root.scale.set(5,5,5);
+        root.scale.set(5,9,9);
         root.position.set(0, 3, 25);
         scene.add(root);
       });
     });
   }
-  makeLabel(400, 100, 'golfer', [0, 3, 25]);
+  
+  {const mtlLoader = new MTLLoader();
+    mtlLoader.load('../flag/materials.mtl', (mtl) => {
+      mtl.preload();
+      for (const material of Object.values(mtl.materials)) {
+        material.side = THREE.DoubleSide;
+      }
+      const objLoader = new OBJLoader();
+      objLoader.setMaterials(mtl);
 
-  // {const mtlLoader = new MTLLoader();
-  //   mtlLoader.load('./Shrub/Shrub.mtl', (mtl) => {
-  //     mtl.preload();
-  //     for (const material of Object.values(mtl.materials)) {
-  //       material.side = THREE.DoubleSide;
-  //     }
-  //     const objLoader = new OBJLoader();
-  //     objLoader.setMaterials(mtl);
+      objLoader.load('../flag/model.obj', (root) => {
+        root.traverse(function (obj) {
+          if (obj.isMesh) {
+            obj.receiveShadow = true;
+            obj.castShadow = true;
+          }
+        });
+        root.rotation.y = 3;
+        root.scale.set(17,12,10);
+        root.position.set(8, 6.5, -13);
+        scene.add(root);
+      });
+    });
+  }
 
-  //     objLoader.load('./Shrub/Shrub.obj', (root) => {
-  //       root.traverse(function (obj) {
-  //         if (obj.isMesh) {
-  //           obj.receiveShadow = true;
-  //           obj.castShadow = true;
-  //           obj.material.color.set(0xffffff);
-  //         }
-  //       });
-  //       root.scale.set(1.5, 1.5, 1.5);
-  //       root.position.set(-11, 0, -21);
-  //       scene.add(root);
-  //     });
-  //   });
-  // }
-  // makeLabel(400, 100, 'shrub', [-11, 6, -21]);
+  {const mtlLoader = new MTLLoader();
+    mtlLoader.load('../Shrub/Shrub.mtl', (mtl) => {
+      mtl.preload();
+      for (const material of Object.values(mtl.materials)) {
+        material.side = THREE.DoubleSide;
+      }
+      const objLoader = new OBJLoader();
+      objLoader.setMaterials(mtl);
 
+      objLoader.load('../Shrub/Shrub.obj', (root) => {
+        root.traverse(function (obj) {
+          if (obj.isMesh) {
+            obj.receiveShadow = true;
+            obj.castShadow = true;
+            obj.material.color.set(0xffffff);
+          }
+        });
+        root.scale.set(1.5, 1.5, 1.5);
+        root.position.set(22, 0, -21);
+        scene.add(root);
+      });
+    });
+  }
+  
 
   /////////////////// boxes and cubes ///////////////////
   const cubes = [];
@@ -312,8 +315,7 @@ function main() {
     cube1.position.set(-2, 0.5, 22);
     scene.add(cube1);
   }
-  makeLabel(400, 100, 'box1', [-2, 0.5, 22]);
-
+  
   {const boxWidth1 = 1;
     const boxHeight1 = 1;
     const boxDepth1 = 1;
@@ -325,7 +327,42 @@ function main() {
     cube1.position.set(5, 0.5, 25);
     scene.add(cube1);
   }
-  makeLabel(400, 100, 'box2', [5, 0.5, 25]);
+  
+  {const boxWidth1 = 5;
+    const boxHeight1 = 5;
+    const boxDepth1 = 5;
+    const geometry1 = new THREE.BoxGeometry(boxWidth1, boxHeight1, boxDepth1);
+    const material1 = new THREE.MeshPhongMaterial({ color: 0x707070 });
+    const cube1 = new THREE.Mesh(geometry1, material1);
+    cube1.castShadow = true;
+    cube1.receiveShadow = true;
+    cube1.position.set(20, 2, 10);
+    scene.add(cube1);
+  }
+
+  {const boxWidth1 = 5;
+    const boxHeight1 = 5;
+    const boxDepth1 = 5;
+    const geometry1 = new THREE.BoxGeometry(boxWidth1, boxHeight1, boxDepth1);
+    const material1 = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+    const cube1 = new THREE.Mesh(geometry1, material1);
+    cube1.castShadow = true;
+    cube1.receiveShadow = true;
+    cube1.position.set(20, 2, 16);
+    scene.add(cube1);
+  }
+
+  {const boxWidth1 = 5;
+    const boxHeight1 = 5;
+    const boxDepth1 = 5;
+    const geometry1 = new THREE.BoxGeometry(boxWidth1, boxHeight1, boxDepth1);
+    const material1 = new THREE.MeshPhongMaterial({ color: 0xB8860B });
+    const cube1 = new THREE.Mesh(geometry1, material1);
+    cube1.castShadow = true;
+    cube1.receiveShadow = true;
+    cube1.position.set(20, 7, 13);
+    scene.add(cube1);
+  }
 
 
   /////////////////// WALLS ///////////////////
@@ -382,20 +419,69 @@ function main() {
 
   ////////////////// spheres ////////////////////
 
-  {const sphereRadius = 3.2;
+  {const sphereRadius = 2;
     const sphereWidthDivisions = 30;
     const sphereHeightDivisions = 15;
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
-    const numSpheres = 4;
+    const numSpheres = 5;
     for (let i = 0; i < numSpheres; ++i) {
       const sphereMat = new THREE.MeshPhongMaterial();
       sphereMat.color.setHSL(i * .5, 1, 0.1);
       const mesh = new THREE.Mesh(sphereGeo, sphereMat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
-      mesh.position.set(-sphereRadius - 15, sphereRadius, i * sphereRadius + 1);
+      mesh.position.set(-sphereRadius - 20, sphereRadius, i * sphereRadius + 1);
       scene.add(mesh);
     }
+  }
+
+  {
+    const sphereRadius = 0.6;
+    const sphereWidthDivisions = 30;
+    const sphereHeightDivisions = 15;
+    const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
+    const numSpheres = 60; // Adjust as needed for the desired number of spheres
+    const circleRadius = 10.5; // Radius of the circular arrangement
+    const center = new THREE.Vector3(-10, -1, -15); // Center of the circle
+
+    for (let i = 0; i < numSpheres; ++i) {
+        const angle = (i / numSpheres) * Math.PI * 2; // Angle for current sphere
+        const x = center.x + circleRadius * Math.cos(angle);
+        const z = center.z + circleRadius * Math.sin(angle);
+        
+        const sphereMat = new THREE.MeshPhongMaterial({ color: 0x888888 }); // Adjust color as needed
+        const mesh = new THREE.Mesh(sphereGeo, sphereMat);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.position.set(x, sphereRadius, z); // Position the sphere at (x, y, z)
+        scene.add(mesh);
+}
+
+  // rainbow ring lol
+
+//   {
+//     const sphereRadius = 0.5;
+//     const sphereWidthDivisions = 30;
+//     const sphereHeightDivisions = 15;
+//     const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
+//     const numSpheres = 240; // Adjust as needed for the desired number of spheres
+//     const circleRadius = 7; // Radius of the circular arrangement
+//     const center = new THREE.Vector3(0, 0, 0); // Center of the circle
+
+//     for (let i = 0; i < numSpheres; ++i) {
+//         const angle = (i / numSpheres) * Math.PI * 2; // Angle for current sphere
+//         const x = center.x + circleRadius * Math.cos(angle);
+//         const z = center.z + circleRadius * Math.sin(angle);
+        
+//         const sphereMat = new THREE.MeshPhongMaterial();
+//         sphereMat.color.setHSL(i / numSpheres, 1, 0.5); // Adjust color as needed
+//         const mesh = new THREE.Mesh(sphereGeo, sphereMat);
+//         mesh.castShadow = true;
+//         mesh.receiveShadow = true;
+//         mesh.position.set(x, sphereRadius, z); // Position the sphere at (x, y, z)
+//         scene.add(mesh);
+// }
+
   }
 
   {const sphereRadius = 0.6;
@@ -403,47 +489,80 @@ function main() {
     const sphereHeightDivisions = 16;
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
     const loader1 = new THREE.TextureLoader();
-    const sphereMat = new THREE.MeshPhongMaterial({ map: loader1.load('../textures/tennisball.jpg') });
+    const sphereMat = new THREE.MeshPhongMaterial({ map: loader1.load('../textures/golfball.jpg') });
     const mesh = new THREE.Mesh(sphereGeo, sphereMat);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     mesh.position.set(3, 1, 22);
     scene.add(mesh);
   }
-  makeLabel(400,100, "golf ball", [3,1,22])
+  
+  /////////////// fountain lake sand //////////////////////
+
+  {const sphereRadius = 7; 
+    const sphereWidthDivisions = 32;
+    const sphereHeightDivisions = 16;
+    const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
+    const flattenScaleY = 0.1; 
+    const widenScaleXZ = 1.5;  
+    sphereGeo.scale(widenScaleXZ, flattenScaleY, widenScaleXZ);
+    const loader = new THREE.TextureLoader();
+    const waterTexture = loader.load('../textures/water.jpg');
+    const sphereMat = new THREE.MeshPhongMaterial({
+        map: waterTexture
+    });
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereMesh.position.set(-10, 0, -15); // Position adjusted for visibility
+    scene.add(sphereMesh);
+  }
+
+  {const sphereRadius = 5; 
+    const sphereWidthDivisions = 32;
+    const sphereHeightDivisions = 16;
+    const sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
+    const flattenScaleY = 0.1; 
+    const widenScaleXZ = 1.5;  
+    sphereGeo.scale(widenScaleXZ, flattenScaleY, widenScaleXZ);
+    const loader = new THREE.TextureLoader();
+    const waterTexture = loader.load('../textures/sand.jpeg');
+    const sphereMat = new THREE.MeshPhongMaterial({
+        map: waterTexture
+    });
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereMesh.position.set(20, 0, -7); 
+    scene.add(sphereMesh);
+  }
 
   {const geometry1 = new THREE.IcosahedronGeometry(2.3);
     const loader1 = new THREE.TextureLoader();
     const material1 = new THREE.MeshPhongMaterial({ map: loader1.load('../textures/water.jpg') });
     const cube1 = new THREE.Mesh(geometry1, material1);
 
-    cube1.position.set(0, 6.5, -21);
+    cube1.position.set(-10, 6.5, -15);
     cubes.push(cube1);
     scene.add(cube1);
   }
-  makeLabel(400,100, "fountain", [0, 8, -21])
-
+  
   {const geometry1 = new THREE.CylinderGeometry(1, 1, 3, 20);
     const material1 = new THREE.MeshPhongMaterial({ color: 'red' });
     const cube1 = new THREE.Mesh(geometry1, material1);
     cube1.castShadow = true;
     cube1.receiveShadow = true;
-    cube1.position.set(0, 2, -21);
+    cube1.position.set(-10, 2, -15);
     scene.add(cube1);
   }
 
   {const geometry1 = new THREE.CylinderGeometry(0.3, 0.3, 10, 20);
     const material1 = new THREE.MeshPhongMaterial({ color: 0x5C5B59 });
     const cube1 = new THREE.Mesh(geometry1, material1);
-    cube1.position.set(0, 5, -21);
+    cube1.position.set(-10, 5, -15);
     scene.add(cube1);
   }
-
   {const geometry1 = new THREE.IcosahedronGeometry(1);
     const loader1 = new THREE.TextureLoader();
     const material1 = new THREE.MeshPhongMaterial({ map: loader1.load('../textures/water.jpg') });
     const cube1 = new THREE.Mesh(geometry1, material1);
-    cube1.position.set(0, 10, -21);
+    cube1.position.set(-10, 10, -15);
     cubes.push(cube1);
     scene.add(cube1);
   }
@@ -453,21 +572,21 @@ function main() {
     const cube1 = new THREE.Mesh(geometry1, material1);
     cube1.castShadow = true;
     cube1.receiveShadow = true;
-    cube1.position.set(-5, 2, 21);
+    cube1.position.set(20, 5, 17);
     cube1.rotation.y = 10;
     scene.add(cube1);
   }
-
+  
   {const geometry1 = new THREE.OctahedronGeometry(2);
     const material1 = new THREE.MeshPhongMaterial({ color: 0x8E0E0A });
     const cube1 = new THREE.Mesh(geometry1, material1);
     cube1.castShadow = true;
     cube1.receiveShadow = true;
-    cube1.position.set(-8, 2, 18.5);
+    cube1.position.set(20, 11.5, 13);
     cube1.rotation.y = 15;
     scene.add(cube1);
   }
-
+  
   /////////////////////// render and drawing ///////////////////////
 
   function resizeRendererToDisplaySize(renderer) {
