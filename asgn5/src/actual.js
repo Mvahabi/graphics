@@ -449,13 +449,15 @@ function main() {
         const x = center.x + circleRadius * Math.cos(angle);
         const z = center.z + circleRadius * Math.sin(angle);
         
-        const sphereMat = new THREE.MeshPhongMaterial({ color: 0x888888 }); // Adjust color as needed
+        const sphereMat = new THREE.MeshPhongMaterial({ color: 0x707070 }); // Adjust color as needed
         const mesh = new THREE.Mesh(sphereGeo, sphereMat);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.position.set(x, sphereRadius, z); // Position the sphere at (x, y, z)
         scene.add(mesh);
-}
+    }
+        
+  }
 
   // rainbow ring lol
 
@@ -482,7 +484,6 @@ function main() {
 //         scene.add(mesh);
 // }
 
-  }
 
   {const sphereRadius = 0.6;
     const sphereWidthDivisions = 32;
