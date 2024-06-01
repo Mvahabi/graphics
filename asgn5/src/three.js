@@ -44,7 +44,7 @@ function main() {
   {const color = 0xFFFFFF;
     const intensity = 1;
     const light = new THREE.PointLight(color, intensity);
-    light.position.set(-8, 22, -15);
+    light.position.set(-10, 20, 20);
     light.castShadow = true;
     scene.add(light);
   }
@@ -53,6 +53,7 @@ function main() {
     const color = 0xFFEAD0;
     const intensity = 0.2;
     const light = new THREE.DirectionalLight(color, intensity);
+
     light.position.set(0, 10, 0);
     light.target.position.set(-5, 0, 0);
 

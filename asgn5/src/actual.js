@@ -44,7 +44,7 @@ function main() {
   {const color = 0xFFFFFF;
     const intensity = 1;
     const light = new THREE.PointLight(color, intensity);
-    light.position.set(-8, 22, -15);
+    light.position.set(-8, 25, -10);
     light.castShadow = true;
     scene.add(light);
   }

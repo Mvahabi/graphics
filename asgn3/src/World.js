@@ -1,38 +1,23 @@
+// ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE = `
 precision mediump float;
+attribute vec4 a_Position;
 attribute vec2 a_UV;
 varying vec2 v_UV;
-attribute vec3 a_Normal;
-varying vec3 v_Normal;
-varying vec4 v_VertPos;
-attribute vec4 a_Position;
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_GlobalRotateMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
-uniform mat4 u_NormalMatrix;
-uniform bool u_normalon;
 void main() {
   gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
   v_UV = a_UV;
-  if (u_normalon) {
-    v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 1)));
-  } else {
-    v_Normal = a_Normal;
-  }
-  v_VertPos = u_ModelMatrix * a_Position;
 }`
 
 // Fragment shader program
 var FSHADER_SOURCE = `
 precision mediump float;
 varying vec2 v_UV;
-varying vec3 v_Normal;
-uniform vec3 u_lightcolor;
-uniform vec3 u_lightpos;
-uniform vec3 u_camerapos;
-varying vec4 v_VertPos;
 uniform vec4 u_FragColor;
 uniform sampler2D u_Sampler0;
 uniform sampler2D u_Sampler1;
@@ -41,14 +26,11 @@ uniform sampler2D u_Sampler3;
 uniform sampler2D u_Sampler4;
 uniform sampler2D u_Sampler5;
 uniform int u_whichTexture;
-uniform bool u_lighton;
 void main() {
-  if (u_whichTexture == -3) {
-    gl_FragColor = vec4((v_Normal + 1.0) / 2.0, 1.0);
-  } else if (u_whichTexture == -2) {
+  if (u_whichTexture == -2) {
     gl_FragColor = u_FragColor;
   } else if (u_whichTexture == -1) {
-    gl_FragColor = vec4(v_UV,1.0,1.0);
+    gl_FragColor = vec4(v_UV, 1.0, 1.0);
   } else if (u_whichTexture == 0) { 
     gl_FragColor = texture2D(u_Sampler0, v_UV);
   } else if (u_whichTexture == 1) {
@@ -65,24 +47,6 @@ void main() {
     gl_FragColor = vec4(0.4, 0.56, 0.45, 1.0);
   } else {
     gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0);
-  }
-  vec3 lightVector = u_lightpos - vec3(v_VertPos);
-  float r = length(lightVector);
-  vec3 L = normalize(lightVector);
-  vec3 N = normalize(v_Normal);
-  float nL = max(dot(N,L), 0.0);
-  vec3 R = reflect(L, N);
-  vec3 E = normalize(u_camerapos - vec3(v_VertPos));
-  float specular = pow(max(dot(E,R), 0.0), 30.0);
-  vec3 diff = vec3(gl_FragColor) * nL * 0.7;
-  vec3 amb = vec3(gl_FragColor) * 0.3;
-
-  if (u_lighton) {
-    if (u_whichTexture == 0) {
-      gl_FragColor = vec4(diff + amb, 1.0);
-    } else {
-      gl_FragColor = vec4(specular * u_lightcolor + diff * u_lightcolor + amb, gl_FragColor.a);
-    }
   }
 }`
 
@@ -104,26 +68,18 @@ let u_Sampler3;
 let u_Sampler4;
 let u_Sampler5;
 let u_whichTexture;
-let a_Normal;
-let u_NormalMatrix;
-let u_normalon;
-let u_lighton;
-let u_lightpos;
-let u_camerapos;
-let u_lightcolor;
 
 function setupWebGL() {
-  // Retrieve <canvas> element
+  // Retrieve canvas element
   canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
   gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
   if (!gl) {
-    console.log('Failed to get the rendering context for WebGL');
-    return;
+      console.log('Failed to get the rendering context for WebGL');
+      return;
   }
   gl.enable(gl.DEPTH_TEST);
-
 }
 
 function convertCoordinatesEventToGL(ev) {
@@ -152,6 +108,7 @@ function connectVariablesToGLSL() {
   // Get the storage location of a_UV
   a_UV = gl.getAttribLocation(gl.program, 'a_UV');
   if (a_UV < 0) {
+    console.log('bruh');
     console.log('Failed to get the storage location of a_UV');
     return;
   }
@@ -170,10 +127,10 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // Get the storage location of u_ProjectionMatrix
-  u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
-  if (!u_ProjectionMatrix) {
-    console.log('Failed to get u_ProjectionMatrix');
+  // Get the storage location of u_GlobalRotateMatrix
+  u_GlobalRotateMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotateMatrix');
+  if (!u_GlobalRotateMatrix) {
+    console.log('Failed to get the storage location of u_GlobalRotateMatrix');
     return;
   }
 
@@ -184,22 +141,22 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // Get the storage location of u_GlobalRotateMatrix
-  u_GlobalRotateMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotateMatrix');
-  if (!u_GlobalRotateMatrix) {
-    console.log('Failed to get the storage location of u_GlobalRotateMatrix');
+  // Get the storage location of u_ProjectionMatrix
+  u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
+  if (!u_ProjectionMatrix) {
+    console.log('Failed to get u_ProjectionMatrix');
     return;
   }
 
   // Get the storage location of u_Sampler0
-  u_Sampler0 = gl.getUniformLocation(gl.program, 'u_Sampler0'); //sky
+  u_Sampler0 = gl.getUniformLocation(gl.program, 'u_Sampler0');
   if (!u_Sampler0) {
     console.log('Failed to get u_Sampler0');
     return false;
   }
 
   // Get the storage location of u_Sampler1
-  u_Sampler1 = gl.getUniformLocation(gl.program, 'u_Sampler1'); //grass
+  u_Sampler1 = gl.getUniformLocation(gl.program, 'u_Sampler1');
   if (!u_Sampler1) {
     console.log('Failed to get u_Sampler1');
     return false;
@@ -240,58 +197,8 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // Get the storage location of a_Normal
-  a_Normal = gl.getAttribLocation(gl.program, 'a_Normal');
-  if (a_Normal < 0) {
-    console.log('Failed to get the storage location of a_Normal');
-    return;
-  }
-  
-  // Get the storage location of u_NormalMatrix
-  u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
-  if (!u_NormalMatrix) {
-    console.log('Failed to get the storage location of u_NormalMatrix');
-    return;
-  }
-
-  // Get the storage location of u_normalon
-  u_normalon = gl.getUniformLocation(gl.program, 'u_normalon');
-  if (!u_normalon) {
-    console.log('Failed to get the storage location of u_normalon');
-    return;
-  }
-
-  // Get the storage location of u_lighton
-  u_lighton = gl.getUniformLocation(gl.program, 'u_lighton');
-  if (!u_lighton) {
-    console.log('Failed to get u_lighton');
-    return;
-  }
-
-  // Get the storage location of u_lightpos
-  u_lightpos = gl.getUniformLocation(gl.program, 'u_lightpos');
-  if (!u_lightpos) {
-    console.log('Failed to get the storage location of u_lightpos');
-    return;
-  }
-
-  // Get the storage location of u_camerapos
-  u_camerapos = gl.getUniformLocation(gl.program, 'u_camerapos');
-  if (!u_camerapos) {
-    console.log('Failed to get the storage location of u_camerapos');
-    return;
-  }
-
-  // Get the storage location of u_lightcolor
-  u_lightcolor = gl.getUniformLocation(gl.program, 'u_lightcolor');
-  if (!u_lightcolor) {
-    console.log('Failed to get the storage location of u_lightcolor');
-    return;
-  }
-
   var identityM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
-
 }
 
 function initTextures() {
@@ -465,11 +372,6 @@ let g_rwri = 0;
 let g_animate = false;
 let shift_key = false;
 let g_cap = 0;
-let g_lightpos = [0, 1, -2];
-let g_lightOn = false;
-let g_lightColor = [1.0, 1.0, 1.0];
-let g_normalOn = false;
-let g_aniLight = true;
 var g_startTime = performance.now() / 1000.0;
 var g_seconds = performance.now() / 1000.0 - g_startTime;
 var g_camera;
@@ -486,23 +388,11 @@ function addActionForHtmlUI() {
     document.getElementById('rshol').addEventListener('mousemove', function () { g_rshol = this.value; renderScene(); });
     document.getElementById('relb').addEventListener('mousemove', function () { g_relb = this.value; renderScene(); });
     document.getElementById('rwri').addEventListener('mousemove', function () { g_rwri = this.value; renderScene(); }); 
-    document.getElementById('Xcoord').addEventListener('mousemove', function (ev) { if (ev.buttons == 1) { g_lightpos[0] = this.value / 100; renderScene(); } })
-    document.getElementById('Ycoord').addEventListener('mousemove', function (ev) { if (ev.buttons == 1) { g_lightpos[1] = this.value / 100; renderScene(); } })
-    document.getElementById('Zcoord').addEventListener('mousemove', function (ev) { if (ev.buttons == 1) { g_lightpos[2] = this.value / 100; renderScene(); } })
-    document.getElementById('color').addEventListener('mousemove', function () { g_lightColor[2] = this.value / 10; });
     
     // Buttons
     document.getElementById('on').addEventListener('click', function () { g_animate = true; });
     document.getElementById('off').addEventListener('click', function () { g_animate = false; });
-    document.getElementById('normalon').addEventListener('click', function () { g_normalOn = true; });
-    document.getElementById('normaloff').addEventListener('click', function () { g_normalOn = false; });
-    document.getElementById('lighton').addEventListener('click', function () { g_lightOn = true; });
-    document.getElementById('lightoff').addEventListener('click', function () { g_lightOn = false; });
-    document.getElementById('startlight').addEventListener('click', function () { g_aniLight = true; });
-    document.getElementById('stoplight').addEventListener('click', function () { g_aniLight = false; });
 }
-
-var xyCoord = [0, 0];
 
 function main() {
   // Set up canvas and gl variables
@@ -513,19 +403,8 @@ function main() {
 
   // Set up actions for the HTML UI elements
   addActionForHtmlUI();
-
-  // Register function (event handler) to be called on a mouse hold
-  canvas.onmousedown = click;
-  canvas.onmousemove = function (ev) {
-    if (ev.buttons == 1) {
-      click(ev, 1)
-    } else {
-      if (xyCoord[0] != 0) {
-        xyCoord = [0, 0];
-      }
-    }
-  }
-
+  
+  // Register function (event handler) to be called on a key press
   g_camera = new Camera();
   document.onkeydown = keydown;
   initTextures();
@@ -551,25 +430,24 @@ function updateAnimationAngles() {
   }
 }
 
-// Rotate viewspace when mouse clicked and dragged
-function click(ev) {
-  let [x, y] = convertCoordinatesEventToGL(ev);
-  if (xyCoord[0] == 0) {
-    xyCoord = [x, y];
-  }
-
-  g_AngleX += xyCoord[0] - x;
-  g_AngleY += xyCoord[1] - y;
-
-  if (Math.abs(g_AngleX / 360) > 1) {
-    g_AngleX = 0;
-  }
-
-  if (Math.abs(g_AngleY / 360) > 1) {
-    g_AngleY = 0;
-  }
-}
-
+// Controls the camera movements with keys
+// function keydown(ev) {
+//   if (ev.keyCode == 68) { //d
+//     g_camera.eye.elements[0] += 0.2;
+//   } else if (ev.keyCode == 65) { // a
+//     g_camera.eye.elements[0] -= 0.2;
+//   } else if (ev.keyCode == 87) { //w
+//     g_camera.forward();
+//   } else if (ev.keyCode == 83) { 
+//     g_camera.back();
+//   } else if (ev.keyCode == 81) {
+//     g_camera.panLeft();
+//   } else if (ev.keyCode == 69) {
+//     g_camera.panRight();
+//   }
+//   renderScene();
+//   console.log(ev.keyCode);
+// }
 function keydown(ev) {
   if (ev.keyCode == 68) { // 'd' key
       g_camera.eye.elements[0] += 0.2;
@@ -714,7 +592,6 @@ var g_up = [0, 1, 0];
 
 function renderScene() {
   var startTime = performance.now();
-
   var projMat = new Matrix4();
   projMat.setPerspective(50, canvas.width / canvas.height, .1, 1000);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
@@ -728,65 +605,30 @@ function renderScene() {
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
   // Pass the matrix to u_ModelMatrix attribute
-  var globalRotMat = new Matrix4().rotate(g_AngleX, 0, -1, 0);
-  globalRotMat.rotate(g_camSlider, 0, 1, 0);
-  globalRotMat.rotate(g_AngleY, -1, 0, 0);
+  var globalRotMat = new Matrix4().rotate(g_camSlider, 0, 1, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-
+  
   // Clear canvas
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  gl.uniform3f(u_lightpos, g_lightpos[0], g_lightpos[1], g_lightpos[2]);
-  gl.uniform3f(u_lightcolor, g_lightColor[0], g_lightColor[1], g_lightColor[2]);
-  gl.uniform3f(u_camerapos, g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
-  gl.uniform1i(u_lighton, g_lightOn);
-  gl.uniform1i(u_normalon, g_normalOn);
-
-  var lightS = new Cube();
-  lightS.color = [g_lightColor[0], g_lightColor[1], g_lightColor[2], 1.0];
-  lightS.matrix.translate(g_lightpos[0], g_lightpos[1], g_lightpos[2]);
-  lightS.matrix.scale(-0.1, -0.1, -0.1);
-  lightS.matrix.translate(-0.5, -.5, -.5);
-  lightS.render();
-
   // Sky
   var sky = new Cube();
-  sky.color = [1, 0, 0, 1];
-  if (g_normalOn) {
-    sky.textureNum = -3;
-  } else {
-    sky.textureNum = 0;
-  }
-  sky.matrix.scale(20.0, 20.0, 20.0);
+  sky.color = [1.0, 0.0, 0.0, 1.0];
+  sky.textureNum = 0;
+  sky.matrix.scale(50.0, 50.0, 50.0);
   sky.matrix.translate(-0.5, -0.5, -0.5);
-  sky.normalMatrix.setInverseOf(sky.matrix).transpose();
   sky.render();
 
   // Floor
   var floor = new Cube();
-  if (g_normalOn) {
-    floor.textureNum = -3;
-  } else {
-    floor.textureNum = 1;
-  }
+  floor.textureNum = 1;
   floor.matrix.translate(0.0, -0.2, 0.0);
   floor.matrix.scale(10.0, 0.0, 10.0);
   floor.matrix.translate(-0.5, 0.0, -0.5);
-  floor.normalMatrix.setInverseOf(floor.matrix).transpose();
   floor.render();
 
-  // Sphere
-  var sphere = new Sphere();
-  sphere.matrix.translate(-1, 1.3, -.3);
-  sphere.matrix.scale(.5, .5, .5);
-  if (g_normalOn) {
-    sphere.textureNum = -3;
-  } else {
-    sphere.textureNum = 3;
-  }
-  sphere.normalMatrix.setInverseOf(sphere.matrix).transpose();
-  sphere.render();
+  drawMap();
 
   // Set color variables
   var yellow = [1.0, 1.0, 0.0, 1.0];
@@ -806,24 +648,13 @@ function renderScene() {
   // face 
   var body = new Cube();
   body.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   body.matrix.scale(0.6, 0.6, 0.3);
   body.matrix.translate(-0.5, 1.1, -0.3);
-  body.normalMatrix.setInverseOf(body.matrix).transpose();
   body.render();
 
   // Left Eye
   var lefteye = new Cube();
   lefteye.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   lefteye.matrix.scale(0.1, 0.02, 0.01);
   lefteye.matrix.translate(-1.5, 52, -11);
   lefteye.render();
@@ -831,11 +662,6 @@ function renderScene() {
   // Right Eye 1
   var righteye1 = new Cube();
   righteye1.color = white;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   righteye1.matrix.scale(0.05, 0.07, 0.01);
   righteye1.matrix.translate(1.3, 14.5, -11.5);
   righteye1.render();
@@ -843,11 +669,6 @@ function renderScene() {
   // Right Eye 2
   var righteye2 = new Cube();
   righteye2.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   righteye2.matrix.scale(0.1, 0.13, 0.01);
   righteye2.matrix.translate(0.45, 7.6, -11);
   righteye2.render();
@@ -855,11 +676,6 @@ function renderScene() {
   // Left Eyebrows 
   var leftbrows = new Cube();
   leftbrows.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftbrows.matrix.scale(0.14, 0.02, 0.01);
   leftbrows.matrix.translate(-1.2, 57, -11);
   leftbrows.render();
@@ -867,11 +683,6 @@ function renderScene() {
   // right Eyebrows 
   var rightbrows = new Cube();
   rightbrows.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightbrows.matrix.scale(0.14, 0.02, 0.01);
   rightbrows.matrix.translate(0.19, 57, -11);
   rightbrows.render();
@@ -879,11 +690,6 @@ function renderScene() {
   // Nose
   var nose = new Cube();
   nose.color = mediumSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   nose.matrix.scale(0.15, 0.1, 0.1);
   nose.matrix.translate(-0.5, 8.4, -1.4);
   nose.render();
@@ -891,11 +697,6 @@ function renderScene() {
   // Mouth
   var mouth = new Cube();
   mouth.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   mouth.matrix.scale(0.25, 0.01, 0.01);
   mouth.matrix.translate(-0.5, 80, -10);
   mouth.render();
@@ -903,11 +704,6 @@ function renderScene() {
   // Left chin
   var leftchin = new Cube();
   leftchin.color = mediumSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftchin.matrix.scale(0.1, 0.07, 0.1);
   leftchin.matrix.translate(-1, 9.9, -1.8);
   leftchin.render();
@@ -915,11 +711,6 @@ function renderScene() {
   // Right chin
   var rightchin = new Cube();
   rightchin.color = mediumSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightchin.matrix.scale(0.1, 0.07, 0.1);
   rightchin.matrix.translate(0.1, 9.9, -1.8);
   rightchin.render();
@@ -927,11 +718,6 @@ function renderScene() {
   // Top clothes
   var top = new Cube();
   top.color = red;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   top.matrix.scale(0.6, 0.07, 0.3);
   top.matrix.translate(-0.5, 8.4, -0.3);
   top.render();
@@ -939,11 +725,6 @@ function renderScene() {
   // shirt
   var shirt = new Cube();
   shirt.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   shirt.matrix.scale(0.6, 0.14, 0.3);
   shirt.matrix.translate(-0.5, 3.2, -0.3);
   shirt.render();
@@ -951,33 +732,18 @@ function renderScene() {
   // Buttons
   var button1 = new Cube();
   button1.color = yellow;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   button1.matrix.scale(0.02, 0.02, 0.1);
   button1.matrix.translate(-0.5, 27, -1);
   button1.render();
 
   var button2 = new Cube();
   button2.color = yellow;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   button2.matrix.scale(0.02, 0.02, 0.1);
   button2.matrix.translate(-0.5, 25, -1);
   button2.render();
 
   var button3 = new Cube();
   button3.color = yellow;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   button3.matrix.scale(0.02, 0.02, 0.1);
   button3.matrix.translate(-0.5, 23, -1);
   button3.render();
@@ -985,11 +751,6 @@ function renderScene() {
   // Left Leg
   var leftleg = new Cube();
   leftleg.color = blue;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftleg.matrix.rotate(g_leftLeg, 1, 0, 0);
   leftleg.matrix.scale(0.16, 0.55, 0.1);
   leftleg.matrix.translate(-1.4, -0.2, 0.1);
@@ -998,11 +759,6 @@ function renderScene() {
   // Right Leg
   var rightleg = new Cube();
   rightleg.color = blue;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightleg.matrix.rotate(-g_rightLeg, 1, 0, 0);
   rightleg.matrix.scale(0.16, 0.55, 0.1);
   rightleg.matrix.translate(0.4, -0.2, 0.1);
@@ -1011,11 +767,6 @@ function renderScene() {
   // Left Shoe
   var leftshoe = new Cube();
   leftshoe.color = darkBrown;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftshoe.matrix.rotate(g_leftLeg, 1, 0, 0);
   leftshoe.matrix.scale(0.11, 0.05, 0.15);
   leftshoe.matrix.translate(-1.8, -3.3, -0.3);
@@ -1024,11 +775,6 @@ function renderScene() {
   // Right Shoe
   var rightshoe = new Cube();
   rightshoe.color = darkBrown;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightshoe.matrix.rotate(-g_rightLeg, 1, 0, 0);
   rightshoe.matrix.scale(0.11, 0.05, 0.15);
   rightshoe.matrix.translate(0.8, -3.3, -0.3);
@@ -1037,11 +783,6 @@ function renderScene() {
   // Left Arm Shoulder
   var leftarms = new Cube();
   leftarms.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftarms.matrix.rotate(g_lshol, 0, 0, 1);
   var elbow = new Matrix4(leftarms.matrix);
   leftarms.matrix.scale(0.09, 0.37, 0.09);
@@ -1051,11 +792,6 @@ function renderScene() {
   // Left Arm Elbow
   var leftarme = new Cube();
   leftarme.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftarme.matrix = elbow;
   leftarme.matrix.rotate(g_lelb, 0, 1, 1);
   var wrist = new Matrix4(leftarme.matrix);
@@ -1066,11 +802,6 @@ function renderScene() {
   // Left Arm Wrist
   var leftarmw = new Cube();
   leftarmw.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   leftarmw.matrix = wrist;
   leftarmw.matrix.rotate(g_lwri, 0, 1, 1);
   leftarmw.matrix.scale(0.09, 0.06, 0.09);
@@ -1080,11 +811,6 @@ function renderScene() {
   // Right Arm Shoulder
   var rightarms = new Cube();
   rightarms.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightarms.matrix.rotate(g_rshol, 0, 0, 1);
   var elbow1 = new Matrix4(rightarms.matrix);
   rightarms.matrix.scale(0.09, 0.37, 0.09);
@@ -1094,11 +820,6 @@ function renderScene() {
   // Right Arm Elbow
   var rightarme = new Cube();
   rightarme.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightarme.matrix = elbow1;
   rightarme.matrix.rotate(g_relb, 0, 1, 1);
   var wrist1 = new Matrix4(rightarme.matrix);
@@ -1109,11 +830,6 @@ function renderScene() {
   // Right Arm Wrist
   var rightarmw = new Cube();
   rightarmw.color = lightSkin;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   rightarmw.matrix = wrist1;
   rightarmw.matrix.rotate(g_rwri, 0, 1, 1);
   rightarmw.matrix.scale(0.09, 0.06, 0.09);
@@ -1123,11 +839,6 @@ function renderScene() {
   // Cap
   var cap = new Cube();
   cap.color = gray;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   cap.matrix.rotate(g_cap, 1, 0, 0);
   cap.matrix.scale(0.6, 0.18, 0.33);
   cap.matrix.translate(-0.5, 7, -0.38);
@@ -1135,17 +846,10 @@ function renderScene() {
 
   var cap2 = new Cube();
   cap2.color = black;
-  if (g_normalOn) {
-    rightarmw.textureNum = -3;
-  } else {
-    rightarmw.textureNum = -2;
-  }
   cap2.matrix.rotate(g_cap, 1, 0, 0);
   cap2.matrix.scale(0.6, 0.02, 0.48);
   cap2.matrix.translate(-0.5, 62, -0.57);
   cap2.render();
-
-  drawMap();
 
   var duration = performance.now() - startTime;
   sendTextToHTML(" ms: " + Math.floor(duration) + " fps: " + Math.floor(10000 / duration) / 10, "numdot");
@@ -1159,4 +863,3 @@ function sendTextToHTML(text, htmlID) {
   }
   htmlElm.innerHTML = text;
 }
-
